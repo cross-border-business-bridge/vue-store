@@ -7,10 +7,10 @@
  */
 export default {
   state: {
-    shoppingCart: []
-    // shoppingCart结构
-    /* 
-    shoppingCart = {
+    shoppingCarts: []
+    // shoppingCarts结构
+    /*
+    shoppingCarts = {
       id: "", // 购物车id
       productID: "", // 商品id
       productName: "", // 商品名称
@@ -22,24 +22,28 @@ export default {
     } */
   },
   getters: {
-    getShoppingCart (state) {
+    getshoppingCarts (state) {
       // 获取购物车状态
-      return state.shoppingCart;
+      return state.shoppingCarts;
     },
     getNum (state) {
       // 购物车商品总数量
       let totalNum = 0;
-      for (let i = 0; i < state.shoppingCart.length; i++) {
-        const temp = state.shoppingCart[i];
-        totalNum += temp.num;
-      }
+      // for (let i = 0; i < state.shoppingCarts.length; i++) {
+      //   const temp = state.shoppingCarts[i];
+      //   totalNum += temp.num;
+      // }
+
+      state.shoppingCarts.forEach(({num}) => totalNum += num);
+
       return totalNum;
     },
     getIsAllCheck (state) {
       // 判断是否全选
+      /*
       let isAllCheck = true;
-      for (let i = 0; i < state.shoppingCart.length; i++) {
-        const temp = state.shoppingCart[i];
+      for (let i = 0; i < state.shoppingCarts.length; i++) {
+        const temp = state.shoppingCarts[i];
         // 只要有一个商品没有勾选立即return false;
         if (!temp.check) {
           isAllCheck = false;
@@ -47,59 +51,70 @@ export default {
         }
       }
       return isAllCheck;
+      */
+      return state.shoppingCarts.every(({check}) => check);
     },
     getCheckGoods (state) {
       // 获取勾选的商品信息
       // 用于确认订单页面
-      let checkGoods = [];
-      for (let i = 0; i < state.shoppingCart.length; i++) {
-        const temp = state.shoppingCart[i];
-        if (temp.check) {
-          checkGoods.push(temp);
-        }
-      }
-      return checkGoods;
+      // let checkGoods = [];
+      // for (let i = 0; i < state.shoppingCarts.length; i++) {
+      //   const temp = state.shoppingCarts[i];
+      //   if (temp.check) {
+      //     checkGoods.push(temp);
+      //   }
+      // }
+      // return checkGoods;
+
+      return state.shoppingCarts.filter(({check}) => check);
+
     },
     getCheckNum (state) {
       // 获取购物车勾选的商品数量
-      let totalNum = 0;
-      for (let i = 0; i < state.shoppingCart.length; i++) {
-        const temp = state.shoppingCart[i];
-        if (temp.check) {
-          totalNum += temp.num;
-        }
-      }
-      return totalNum;
+      // let totalNum = 0;
+      // for (let i = 0; i < state.shoppingCarts.length; i++) {
+      //   const temp = state.shoppingCarts[i];
+      //   if (temp.check) {
+      //     totalNum += temp.num;
+      //   }
+      // }
+      //
+      // return totalNum;
+
+      return this.getNum(this.getCheckGoods(state));
     },
     getTotalPrice (state) {
       // 购物车勾选的商品总价格
       let totalPrice = 0;
-      for (let i = 0; i < state.shoppingCart.length; i++) {
-        const temp = state.shoppingCart[i];
-        if (temp.check) {
-          totalPrice += temp.price * temp.num;
-        }
-      }
+      // for (let i = 0; i < state.shoppingCarts.length; i++) {
+      //   const temp = state.shoppingCarts[i];
+      //   if (temp.check) {
+      //     totalPrice += temp.price * temp.num;
+      //   }
+      // }
+
+      this.getCheckGoods(state).forEach(({price, num}) => totalPrice += price * num);
+
       return totalPrice;
     }
   },
   mutations: {
-    setShoppingCart (state, data) {
+    setshoppingCarts (state, data) {
       // 设置购物车状态
-      state.shoppingCart = data;
+      state.shoppingCarts = data;
     },
-    unshiftShoppingCart (state, data) {
+    unshiftshoppingCarts (state, data) {
       // 添加购物车
       // 用于在商品详情页点击添加购物车,后台添加成功后，更新vuex状态
-      state.shoppingCart.unshift(data);
+      state.shoppingCarts.unshift(data);
     },
-    updateShoppingCart (state, payload) {
+    updateshoppingCarts (state, payload) {
       // 更新购物车
       // 可更新商品数量和是否勾选
       // 用于购物车点击勾选及加减商品数量
       if (payload.prop == "num") {
         // 判断效果的商品数量是否大于限购数量或小于1
-        if (state.shoppingCart[payload.key].maxNum < payload.val) {
+        if (state.shoppingCarts[payload.key].maxNum < payload.val) {
           return;
         }
         if (payload.val < 1) {
@@ -107,13 +122,13 @@ export default {
         }
       }
       // 根据商品在购物车的数组的索引和属性更改
-      state.shoppingCart[payload.key][payload.prop] = payload.val;
+      state.shoppingCarts[payload.key][payload.prop] = payload.val;
     },
-    addShoppingCartNum (state, productID) {
+    addshoppingCartsNum (state, productID) {
       // 增加购物车商品数量
       // 用于在商品详情页点击添加购物车,后台返回002，“该商品已在购物车，数量 +1”，更新vuex的商品数量
-      for (let i = 0; i < state.shoppingCart.length; i++) {
-        const temp = state.shoppingCart[i];
+      for (let i = 0; i < state.shoppingCarts.length; i++) {
+        const temp = state.shoppingCarts[i];
         if (temp.productID == productID) {
           if (temp.num < temp.maxNum) {
             temp.num++;
@@ -121,37 +136,40 @@ export default {
         }
       }
     },
-    deleteShoppingCart (state, id) {
+    deleteshoppingCarts (state, id) {
       // 根据购物车id删除购物车商品
-      for (let i = 0; i < state.shoppingCart.length; i++) {
-        const temp = state.shoppingCart[i];
+      for (let i = 0; i < state.shoppingCarts.length; i++) {
+        const temp = state.shoppingCarts[i];
         if (temp.id == id) {
-          state.shoppingCart.splice(i, 1);
+          state.shoppingCarts.splice(i, 1);
         }
       }
+
+
     },
     checkAll (state, data) {
       // 点击全选按钮，更改每个商品的勾选状态
-      for (let i = 0; i < state.shoppingCart.length; i++) {
-        state.shoppingCart[i].check = data;
-      }
+      // for (let i = 0; i < state.shoppingCarts.length; i++) {
+      //   state.shoppingCarts[i].check = data;
+      // }
+      state.shoppingCarts.map((cart) => cart.check = data);
     }
   },
   actions: {
-    setShoppingCart ({ commit }, data) {
-      commit('setShoppingCart', data);
+    setshoppingCarts ({ commit }, data) {
+      commit('setshoppingCarts', data);
     },
-    unshiftShoppingCart ({ commit }, data) {
-      commit('unshiftShoppingCart', data);
+    unshiftshoppingCarts ({ commit }, data) {
+      commit('unshiftshoppingCarts', data);
     },
-    updateShoppingCart ({ commit }, payload) {
-      commit('updateShoppingCart', payload);
+    updateshoppingCarts ({ commit }, payload) {
+      commit('updateshoppingCarts', payload);
     },
-    addShoppingCartNum ({ commit }, productID) {
-      commit('addShoppingCartNum', productID);
+    addshoppingCartsNum ({ commit }, productID) {
+      commit('addshoppingCartsNum', productID);
     },
-    deleteShoppingCart ({ commit }, id) {
-      commit('deleteShoppingCart', id);
+    deleteshoppingCarts ({ commit }, id) {
+      commit('deleteshoppingCarts', id);
     },
     checkAll ({ commit }, data) {
       commit('checkAll', data);

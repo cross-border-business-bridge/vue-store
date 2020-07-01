@@ -47,6 +47,7 @@ export default {
         return callback(new Error("字母开头,长度5-16之间,允许字母数字下划线"));
       }
     };
+
     // 密码的校验方法
     let validatePass = (rule, value, callback) => {
       if (value === "") {
