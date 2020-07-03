@@ -72,7 +72,7 @@
         </div>
         <!-- 内容区底部按钮 -->
         <div class="button">
-          <el-button class="shop-cart" :disabled="dis" @click="addShoppingCart">加入购物车</el-button>
+          <el-button class="shop-cart" :disabled="dis" @click="addCartNum">加入购物车</el-button>
           <el-button class="like" @click="addCollect">喜欢</el-button>
         </div>
         <!-- 内容区底部按钮END -->
@@ -123,7 +123,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["unshiftShoppingCart", "addShoppingCartNum"]),
+    ...mapActions(["unshiftCart", "addCartNum"]),
     // 获取商品详细信息
     getDetails(val) {
       this.$axios
@@ -166,12 +166,12 @@ export default {
           switch (res.data.code) {
             case "001":
               // 新加入购物车成功
-              this.unshiftShoppingCart(res.data.shoppingCartData[0]);
+              this.unshiftCart(res.data.shoppingCartData[0]);
               this.notifySucceed(res.data.msg);
               break;
             case "002":
               // 该商品已经在购物车，数量+1
-              this.addShoppingCartNum(this.productID);
+              this.addCartNum(this.productID);
               this.notifySucceed(res.data.msg);
               break;
             case "003":

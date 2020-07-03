@@ -162,7 +162,7 @@ export default {
     getUser: function(val) {
       if (val === "") {
         // 用户没有登录
-        this.setshoppingCarts([]);
+        this.setCart([]);
       } else {
         // 用户已经登录,获取该用户的购物车信息
         this.$axios
@@ -172,7 +172,7 @@ export default {
           .then(res => {
             if (res.data.code === "001") {
               // 001 为成功, 更新vuex购物车状态
-              this.setshoppingCarts(res.data.shoppingCartData);
+              this.setCart(res.data.shoppingCartData);
             } else {
               // 提示失败信息
               this.notifyError(res.data.msg);
