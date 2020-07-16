@@ -21,7 +21,7 @@
     <!-- 购物车头部END -->
 
     <!-- 购物车主要内容区 -->
-    <div class="content" v-if="getShoppingCart.length>0">
+    <div class="content" v-if="getCart.length">
       <ul>
         <!-- 购物车表头 -->
         <li class="header">
@@ -126,7 +126,7 @@ export default {
     return {};
   },
   methods: {
-    ...mapActions(["updateShoppingCart", "deleteShoppingCart", "checkAll"]),
+    ...mapActions(['getCart', "updateShoppingCart", "deleteShoppingCart", "checkAll"]),
     // 修改商品数量的时候调用该函数
     handleChange(currentValue, key, productID) {
       // 当修改数量时，默认勾选

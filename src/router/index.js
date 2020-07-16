@@ -11,7 +11,6 @@ import Router from 'vue-router'
 Vue.use(Router)
 
 const routes = [
-
   {
     path: '/',
     name: 'Home',
